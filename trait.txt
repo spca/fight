@@ -1,0 +1,31 @@
+## A,B,C
+template<> 
+struct A::Value<A::B>{
+	typedef C type;
+}
+
+用途：可以指定这个Struct中Value中typedef 定义的类型。
+
+
+template<typename Trait, unsigned Index>
+struct RunMemberT: public RunMemberT<Trait, Index-1>
+{
+    typename Trait::template Value<static_cast<typename Trait::Index>(Index)>::type value;
+};
+
+template<typename Trait>
+struct RunMemberT<Trait, 0u>
+{
+    typename Trait::template Value<static_cast<typename Trait::Index>(0u)>::type value;
+};
+
+template<typename Obj, typename Trait>
+class RunDataBaseT: public RunDataBase
+{
+private:
+	  impl::RunMemberT<Trait, static_cast<unsigned>(Trait::eEnumCount-1)>
+member_;
+//通过上面的Struct定义，构建出Trait的Index枚举中所有Struct，且index为index-1的派生（0是最底的）。
+}
+
+
